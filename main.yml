@@ -1,0 +1,17 @@
+---
+- name: "Installing & configuring Wordpress using GIT"
+  hosts: amazon
+  become: true
+  vars_files:
+    - config.vars
+    - secret.vars
+
+
+        
+  tasks:
+    
+    
+    - name: "Apache - package Installation"
+      yum:
+        name: httpd
+        state: present
