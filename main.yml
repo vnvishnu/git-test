@@ -3,7 +3,7 @@
   hosts: amazon
   become: true
   vars_files:
-    - config.vars
+    - conf.vars
     - secret.vars
 
 
@@ -15,3 +15,36 @@
       yum:
         name: httpd
         state: present
+       
+    - name: "Apache - Crating VirtualHost /etc/httpd/conf.d/default.conf"
+      template:
+        src: virualhost.conf.j2
+        dest: /etc/httpd/conf.d/default.conf
+        owner: "{{ httpd_user }}"
+        group: "{{ httpd_group }}"
+
+
+    - name: "Apache - Creating DocumentRoot /var/www/html/"
+      file:
+        path: "/var/www/html/"
+        state: directory
+        owner: "{{ httpd_user }}"
+        group: "{{ httpd_group }}"
+
+    - name: "Apache - Installing php support"
+      shell: amazon-linux-extras install php7.4 -y
+
+
+    - name: "Apache - Restarting/Enabling php-fpm"
+      service:
+        name: php-fpm
+        state: restarted
+        enabled: true
+
+
+    - name: "Apache - Restarting/Enabling Service"
+      service:
+        name: httpd
+        state: restarted
+        enabled: true
+
