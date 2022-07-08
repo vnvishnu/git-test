@@ -81,3 +81,49 @@
         - /tmp/wordpres.tar.gz
         - /tmp/wordpress
 
+    - name: "Mariadb-Server - Package Installation"
+      yum:
+        name: 
+          - mariadb-server
+          - MySQL-python
+        state: present
+            
+    - name: "Mariadb-Server - Restarting/Enabling Service"
+      service:
+        name: mariadb
+        state: restarted
+        enabled: true
+            
+    - name: "Mariadb-Server - Setting Root Passsword"
+      ignore_errors: true
+      mysql_user:
+        login_user: "root"
+        login_password: ""
+        name: "root"
+        password: "{{ mysql_root_password }}"
+        host_all: true
+            
+    - name: "Mariadb-Server - Removing Anonymous Users"
+      mysql_user:
+        login_user: "root"
+        login_password: "{{ mysql_root_password }}"
+        name: ""
+        state: absent
+        host_all: true
+            
+    - name: "Mariadb-Server - Creating Database {{ mysql_db}}"
+      mysql_db:
+        login_user: "root"
+        login_password: "{{ mysql_root_password }}"
+        name: "{{ mysql_db }}"
+        state: present
+            
+    - name: "mariadb-Server - Creating User {{ mysql_user }}"
+      mysql_user:
+        login_user: "root"
+        login_password: "{{ mysql_root_password }}"
+        name: "{{ mysql_user }}"
+        host: "%"
+        password: "{{ mysql_pass }}"
+        priv: "{{ mysql_db }}.*:ALL"
+
